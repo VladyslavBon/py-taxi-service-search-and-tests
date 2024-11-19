@@ -13,6 +13,7 @@ class PublicManufacturerTest(TestCase):
         res = self.client.get(MANUFACTURER_URL)
         self.assertNotEqual(res.status_code, 200)
 
+
 class PrivateManufacturerTest(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
@@ -34,13 +35,16 @@ class PrivateManufacturerTest(TestCase):
         self.assertTemplateUsed(response, "taxi/manufacturer_list.html")
 
     def test_create_manufacturer(self):
-        form_data = {"name": "New Manufacturer", "country":"USA"}
+        form_data = {"name": "New Manufacturer", "country": "USA"}
         self.client.post(reverse("taxi:manufacturer-create"), data=form_data)
         manufacturer = Manufacturer.objects.get(name=form_data["name"])
         self.assertEqual(manufacturer.name, form_data["name"])
 
     def test_update_manufacturer(self):
-        manufacturer = Manufacturer.objects.create(name="Old Manufacturer", country="USA")
+        manufacturer = Manufacturer.objects.create(
+            name="Old Manufacturer",
+            country="USA"
+        )
         form_data = {"name": "Updated Manufacturer", "country": "USA"}
         url = reverse("taxi:manufacturer-update", args=[manufacturer.id])
         self.client.post(url, data=form_data)
@@ -51,7 +55,9 @@ class PrivateManufacturerTest(TestCase):
         manufacturer = Manufacturer.objects.create(name="Delete Manufacturer")
         url = reverse("taxi:manufacturer-delete", args=[manufacturer.id])
         self.client.post(url)
-        self.assertFalse(Manufacturer.objects.filter(id=manufacturer.id).exists())
+        self.assertFalse(Manufacturer.objects.filter(
+            id=manufacturer.id).exists()
+        )
 
     def test_search_manufacturer_by_name(self):
         Manufacturer.objects.create(name="Toyota")
@@ -114,7 +120,9 @@ class PrivateDriverTest(TestCase):
         )
         url = reverse("taxi:driver-delete", args=[driver.id])
         self.client.post(url)
-        self.assertFalse(get_user_model().objects.filter(id=driver.id).exists())
+        self.assertFalse(
+            get_user_model().objects.filter(id=driver.id).exists()
+        )
 
 
 class PublicCarTest(TestCase):
@@ -157,7 +165,10 @@ class PrivateCarTest(TestCase):
         self.assertEqual(car.manufacturer.id, self.manufacturer.id)
 
     def test_delete_car(self):
-        car = Car.objects.create(model="Corolla", manufacturer=self.manufacturer)
+        car = Car.objects.create(
+            model="Corolla",
+            manufacturer=self.manufacturer
+        )
         url = reverse("taxi:car-delete", args=[car.id])
         self.client.post(url)
         self.assertFalse(Car.objects.filter(id=car.id).exists())
